@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Full Video Vibration Sync</title>
+  <title>Full Beat Vibration</title>
   <style>
     body {
       background: #111;
@@ -32,23 +32,14 @@
 </head>
 <body>
 
-  <h2>Full Vibration-Synced Video</h2>
+  <h2>Feel the Beat Every Second</h2>
   <video id="myVideo" src="https://lemonchiffon-boar-262793.hostingersite.com/video.mp4" controls></video>
-  <button onclick="startVideo()">Start with Vibration</button>
+  <button onclick="startVideo()">Start with Beat Vibration</button>
 
   <script>
-    const vibrationMap = {
-      5: [100, 50, 100],
-      25: [200, 50, 100],
-      45: [300, 50, 100],
-      65: [100, 50, 100],
-      85: [200, 50, 100],
-      105: [300, 50, 100],
-      125: [100, 50, 100],
-      145: [200, 50, 100]
-    };
-
-    let vibratedTimestamps = [];
+    // Vibration hit every second from 0s to 144s
+    const vibrationHits = Array.from({length: 145}, (_, i) => i);
+    let vibrated = new Set();
 
     function startVideo() {
       const video = document.getElementById("myVideo");
@@ -56,11 +47,10 @@
 
       video.ontimeupdate = () => {
         const time = Math.floor(video.currentTime);
-
-        if (vibrationMap[time] && !vibratedTimestamps.includes(time)) {
+        if (vibrationHits.includes(time) && !vibrated.has(time)) {
           if ("vibrate" in navigator) {
-            navigator.vibrate(vibrationMap[time]);
-            vibratedTimestamps.push(time);
+            navigator.vibrate(80); // short consistent buzz
+            vibrated.add(time);
           }
         }
       };
