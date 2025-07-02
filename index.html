@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vibrate Example</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background: #f0f0f0;
+    }
+    button {
+      padding: 1em 2em;
+      font-size: 1.2em;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Tap the Button to Vibrate</h2>
+  <button onclick="triggerVibration()">Vibrate Now</button>
+
+  <script>
+    function triggerVibration() {
+      if ("vibrate" in navigator) {
+        navigator.vibrate([200, 100, 200]); // Vibration pattern
+        alert("Vibration triggered (if your device supports it).");
+      } else {
+        alert("Vibration API not supported on this device/browser.");
+      }
+    }
+  </script>
+
+</body>
+</html>
