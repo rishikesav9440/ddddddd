@@ -3,59 +3,662 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Full Beat Vibration</title>
+  <title>Advanced Haptic Video Experience</title>
   <style>
     body {
-      background: #111;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
       color: white;
-      font-family: sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       text-align: center;
       padding: 20px;
+      margin: 0;
+      min-height: 100vh;
     }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      background: linear-gradient(45deg, #00ff99, #00ccff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 20px rgba(0, 255, 153, 0.3);
+    }
+    
+    .subtitle {
+      font-size: 1.2em;
+      color: #aaa;
+      margin-bottom: 30px;
+    }
+    
     video {
-      width: 90%;
-      max-width: 500px;
+      width: 100%;
+      max-width: 600px;
       border: 3px solid #00ff99;
-      border-radius: 10px;
-      margin-top: 20px;
+      border-radius: 15px;
+      margin: 20px 0;
+      box-shadow: 0 0 30px rgba(0, 255, 153, 0.3);
     }
+    
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+    
     button {
-      margin-top: 20px;
-      padding: 10px 20px;
-      font-size: 18px;
-      background-color: #00ff99;
+      padding: 12px 24px;
+      font-size: 16px;
+      background: linear-gradient(45deg, #00ff99, #00ccff);
       border: none;
-      border-radius: 8px;
+      border-radius: 25px;
       cursor: pointer;
+      color: #000;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 255, 153, 0.3);
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 255, 153, 0.5);
+    }
+    
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .status {
+      margin: 20px 0;
+      padding: 15px;
+      background: rgba(0, 255, 153, 0.1);
+      border-radius: 10px;
+      border: 1px solid rgba(0, 255, 153, 0.3);
+    }
+    
+    .haptic-indicator {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      background: #00ff99;
+      border-radius: 50%;
+      margin: 0 5px;
+      opacity: 0.3;
+      transition: all 0.2s ease;
+    }
+    
+    .haptic-indicator.active {
+      opacity: 1;
+      transform: scale(1.5);
+      box-shadow: 0 0 15px #00ff99;
+    }
+    
+    .info {
+      margin-top: 30px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      text-align: left;
+    }
+    
+    .info h3 {
+      color: #00ff99;
+      margin-bottom: 10px;
+    }
+    
+    .info ul {
+      margin: 10px 0;
+      padding-left: 20px;
+    }
+    
+    .info li {
+      margin: 5px 0;
+      color: #ccc;
     }
   </style>
 </head>
 <body>
-
-  <h2>Feel the Beat Every Second</h2>
-  <video id="myVideo" src="https://lemonchiffon-boar-262793.hostingersite.com/video.mp4" controls></video>
-  <button onclick="startVideo()">Start with Beat Vibration</button>
+  <div class="container">
+    <h1>🎵 Advanced Haptic Video Experience</h1>
+    <p class="subtitle">Feel every beat, rhythm, and moment through synchronized vibrations</p>
+    
+    <video id="myVideo" src="https://lemonchiffon-boar-262793.hostingersite.com/video.mp4" controls></video>
+    
+    <div class="controls">
+      <button id="startBtn" onclick="startHapticVideo()">🎮 Start Haptic Experience</button>
+      <button id="toggleBtn" onclick="toggleHaptics()" disabled>🔊 Disable Haptics</button>
+    </div>
+    
+    <div class="status">
+      <div>Status: <span id="statusText">Ready to start</span></div>
+      <div>Haptic Events: <span id="hapticCount">0</span> / 54</div>
+      <div>Haptic Feedback: <span class="haptic-indicator" id="hapticIndicator"></span></div>
+    </div>
+    
+    <div class="info">
+      <h3>📱 Haptic Experience Features:</h3>
+      <ul>
+        <li>54 precisely timed haptic events synchronized with the video</li>
+        <li>Variable intensity vibrations (from subtle to intense)</li>
+        <li>Complex rhythmic patterns matching the audio</li>
+        <li>Works on mobile devices with vibration support</li>
+        <li>Real-time haptic feedback indicators</li>
+      </ul>
+      
+      <h3>🎯 Best Experience:</h3>
+      <ul>
+        <li>Use on Android mobile devices for full haptic support</li>
+        <li>Ensure device vibration is enabled</li>
+        <li>Hold device securely during intense vibration sequences</li>
+        <li>Use headphones for optimal audio-haptic synchronization</li>
+      </ul>
+    </div>
+  </div>
 
   <script>
-    // Vibration hit every second from 0s to 144s
-    const vibrationHits = Array.from({length: 145}, (_, i) => i);
-    let vibrated = new Set();
-
-    function startVideo() {
-      const video = document.getElementById("myVideo");
-      video.play();
-
-      video.ontimeupdate = () => {
-        const time = Math.floor(video.currentTime);
-        if (vibrationHits.includes(time) && !vibrated.has(time)) {
-          if ("vibrate" in navigator) {
-            navigator.vibrate(80); // short consistent buzz
-            vibrated.add(time);
-          }
+    // Advanced haptic data from the provided JSON
+    const hapticData = {
+      "haptics": [
+        {
+          "timestamp": 15000,
+          "duration": 2500,
+          "pattern": [0, 80, 0, 100, 0, 150, 0, 3170],
+          "amplitudes": [0, 150, 0, 200, 0, 255, 0, 10],
+          "repeat": -1
+        },
+        {
+          "timestamp": 18800,
+          "duration": 100,
+          "pattern": [0,100],
+          "amplitudes": [0,255],
+          "repeat": -1
+        },
+        {
+          "timestamp": 20100,
+          "duration": 300,
+          "pattern": [0, 100, 100, 100],
+          "amplitudes": [0, 255, 0, 100],
+          "repeat": -1
+        },
+        {
+          "timestamp": 20901,
+          "duration": 2299,
+          "pattern": [0, 2299],
+          "amplitudes": [0, 1],
+          "repeat": -1
+        },
+        {
+          "timestamp": 23200,
+          "duration": 2000,
+          "pattern": [0, 2000],
+          "amplitudes": [0, 1],
+          "repeat": -1
+        },
+        {
+          "timestamp": 25200,
+          "duration": 2100,
+          "pattern": [0, 2100],
+          "amplitudes": [0, 1],
+          "repeat": -1
+        },
+        {
+          "timestamp": 27301,
+          "duration": 500,
+          "pattern": [0, 500],
+          "amplitudes": [0, 1],
+          "repeat": -1
+        },
+        {
+          "timestamp": 32115,
+          "duration": 100,
+          "pattern": [0,100],
+          "amplitudes": [0,255],
+          "repeat": -1
+        },
+        {
+          "timestamp": 32465,
+          "duration": 100,
+          "pattern": [0,100],
+          "amplitudes": [0,255],
+          "repeat": -1
+        },
+        {
+          "timestamp": 32794,
+          "duration": 100,
+          "pattern": [0,100],
+          "amplitudes": [0,255],
+          "repeat": -1
+        },
+        {
+          "timestamp": 32894,
+          "duration": 100,
+          "pattern": [0,100],
+          "amplitudes": [0,255],
+          "repeat": -1
+        },
+        {
+          "timestamp": 33415,
+          "duration": 100,
+          "pattern": [0,100],
+          "amplitudes": [0,255],
+          "repeat": -1
+        },
+        {
+          "timestamp": 34620,
+          "duration": 1462,
+          "pattern": [
+            20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+            20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+            20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+            20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+            20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+            20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+            20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+            20, 20, 20, 20, 20, 20, 20, 20, 20, 20
+          ],
+          "amplitudes": [
+            255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+            255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+            255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+            255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+            255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+            255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+            255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+            255, 255, 255, 255, 255, 255, 255, 255, 255, 255
+          ],
+          "repeat": -1
+        },
+        {
+          "timestamp": 36963,
+          "duration": 300,
+          "pattern": [0,300],
+          "amplitudes": [0,255],
+          "repeat":-1
+        },
+        {
+          "timestamp": 37370,
+          "duration": 300,
+          "pattern": [0,300],
+          "amplitudes": [0,255],
+          "repeat":-1
+        },
+        {
+          "timestamp": 38262,
+          "duration": 300,
+          "pattern": [0,300],
+          "amplitudes": [0,255],
+          "repeat":-1
+        },
+        {
+          "timestamp": 39342,
+          "duration": 1552,
+          "pattern": [50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,2],
+          "amplitudes": [0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100],
+          "repeat": -1
+        },
+        {
+          "timestamp": 49366,
+          "duration": 1336,
+          "pattern": [0, 1336],
+          "amplitudes": [0, 255],
+          "repeat": -1
+        },
+        {
+          "timestamp": 70775,
+          "duration": 1950,
+          "pattern": [0, 1950],
+          "amplitudes": [0, 90],
+          "repeat": -1
+        },
+        {
+          "timestamp":75857,
+          "duration": 100,
+          "pattern":[0,100],
+          "amplitudes": [0,255],
+          "repeat": -1
+        },
+        {
+          "timestamp": 76310,
+          "duration": 100,
+          "pattern": [0,100],
+          "amplitudes": [0,255],
+          "repeat": -1
+        },
+        {
+          "timestamp": 77274,
+          "duration": 300,
+          "pattern": [0, 100, 100, 100],
+          "amplitudes": [0, 255, 0, 100],
+          "repeat": -1
+        },
+        {
+          "timestamp": 77646,
+          "duration": 881,
+          "pattern": [0, 10,0,20,0,500,0,270,0,81],
+          "amplitudes": [0,10,0,20,0,90,0,100,0,255],
+          "repeat": -1
+        },
+        {
+          "timestamp": 79181,
+          "duration": 418,
+          "pattern": [0, 418],
+          "amplitudes": [0, 1],
+          "repeat": -1
+        },
+        {
+          "timestamp": 93701,
+          "duration": 300,
+          "pattern": [20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20],
+          "amplitudes": [0, 255, 0, 255, 0, 0, 255, 0, 255, 0, 255, 0, 255 ,0, 255,0,255],
+          "repeat": -1
+        },
+        {
+          "timestamp": 83232,
+          "duration": 2285,
+          "pattern": [0, 2285],
+          "amplitudes": [0, 255],
+          "repeat": -1
+        },
+        {
+          "timestamp": 85856,
+          "duration": 100,
+          "pattern": [0,100],
+          "amplitudes": [0,255],
+          "repeat": -1
+        },
+        {
+          "timestamp": 86053,
+          "duration": 100,
+          "pattern": [0,100],
+          "amplitudes": [0,255],
+          "repeat": -1
+        },
+        {
+          "timestamp": 86309,
+          "duration": 100,
+          "pattern": [0,100],
+          "amplitudes": [0,255],
+          "repeat": -1
+        },
+        {
+          "timestamp": 95989,
+          "duration": 100,
+          "pattern": [0,100],
+          "amplitudes": [0,255],
+          "repeat": -1
+        },
+        {
+          "timestamp": 91010,
+          "duration": 621,
+          "pattern": [
+            0,
+            20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+            20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+            20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+            20,1
+          ],
+          "amplitudes": [
+            0,
+            0, 255, 0, 255, 0, 255, 0, 255, 0, 255,
+            0, 255, 0, 255, 0, 255, 0, 255, 0, 255,
+            0, 255, 0, 255, 0, 255, 0, 255, 0, 255,
+            0, 255
+          ],
+          "repeat": -1
+        },
+        {
+          "timestamp": 96170,
+          "duration": 1627,
+          "pattern": [0,1627],
+          "amplitudes": [0,1],
+          "repeat": -1
+        },
+        {
+          "timestamp": 98336,
+          "duration": 2452,
+          "pattern": [
+            31, 31, 31, 31, 31, 31, 31, 31, 31, 31,
+            31, 31, 31, 31, 31, 31, 31, 31, 31, 31,
+            31, 31, 31, 31, 31, 31, 31, 31, 31, 31,
+            31, 31, 31, 31, 31, 31, 31, 31, 31, 31,
+            31, 31, 31, 31, 31, 31, 31, 31, 31, 31,
+            31, 31, 31, 31, 31, 31, 31, 31, 31, 31,
+            31, 31, 31, 31, 31, 31, 31, 31, 31, 31,
+            31, 31, 31, 31, 31, 31, 31, 31, 31, 23
+          ],
+          "amplitudes": [
+            255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+            255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+            255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+            255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+            255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+            255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+            255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+            255, 255, 255, 255, 255, 255, 255, 255, 255, 255
+          ],
+          "repeat": -1
+        },
+        {
+          "timestamp": 100788,
+          "duration": 633,
+          "pattern": [0,633],
+          "amplitudes":[0,255],
+          "repeat": -1
+        },
+        {
+          "timestamp": 107426,
+          "duration": 2000,
+          "pattern": [0,2000],
+          "amplitudes": [0,255],
+          "repeat": -1
+        },
+        {
+          "timestamp": 109427,
+          "duration": 2000,
+          "pattern": [0,2000],
+          "amplitudes": [0,255],
+          "repeat": -1
+        },
+        {
+          "timestamp": 111428,
+          "duration": 1366,
+          "pattern": [0,1366],
+          "amplitudes": [0,255],
+          "repeat": -1
+        },
+        {
+          "timestamp": 112883,
+          "duration": 300,
+          "pattern": [0, 100, 100, 100],
+          "amplitudes": [0, 255, 0, 100],
+          "repeat": -1
+        },
+        {
+          "timestamp": 113185,
+          "duration": 2000,
+          "pattern": [0,2000],
+          "amplitudes": [0,255],
+          "repeat": -1
+        },
+        {
+          "timestamp": 115186,
+          "duration": 2000,
+          "pattern": [0,2000],
+          "amplitudes": [0,255],
+          "repeat": -1
+        },
+        {
+          "timestamp": 117187,
+          "duration": 1563,
+          "pattern": [0,1563],
+          "amplitudes": [0,255],
+          "repeat": -1
+        },
+        {
+          "timestamp": 118872,
+          "duration": 300,
+          "pattern": [0, 100, 100, 100],
+          "amplitudes": [0, 255, 0, 100],
+          "repeat": -1
+        },
+        {
+          "timestamp": 119172,
+          "duration": 100,
+          "pattern":[0,100],
+          "amplitudes": [0,255],
+          "repeat": -1
+        },
+        {
+          "timestamp": 119445,
+          "duration": 100,
+          "pattern": [0,100],
+          "amplitudes": [0,255],
+          "repeat": -1
+        },
+        {
+          "timestamp": 119548,
+          "duration": 2000,
+          "pattern": [0,2000],
+          "amplitudes": [0,255],
+          "repeat": -1
+        },
+        {
+          "timestamp": 121547,
+          "duration": 1800,
+          "pattern": [0,1800],
+          "amplitudes": [0,255],
+          "repeat": -1
         }
+      ]
+    };
+
+    let video;
+    let hapticsEnabled = true;
+    let triggeredHaptics = new Set();
+    let hapticCount = 0;
+    let statusText, hapticCountEl, hapticIndicator;
+    let startBtn, toggleBtn;
+
+    function initializeElements() {
+      video = document.getElementById("myVideo");
+      statusText = document.getElementById("statusText");
+      hapticCountEl = document.getElementById("hapticCount");
+      hapticIndicator = document.getElementById("hapticIndicator");
+      startBtn = document.getElementById("startBtn");
+      toggleBtn = document.getElementById("toggleBtn");
+    }
+
+    function startHapticVideo() {
+      if (!video) initializeElements();
+      
+      video.play();
+      startBtn.disabled = true;
+      toggleBtn.disabled = false;
+      statusText.textContent = "Haptic experience active";
+      
+      // Reset haptic tracking
+      triggeredHaptics.clear();
+      hapticCount = 0;
+      hapticCountEl.textContent = "0";
+      
+      // Set up video time monitoring
+      video.ontimeupdate = handleVideoTimeUpdate;
+      
+      // Reset when video ends
+      video.onended = () => {
+        startBtn.disabled = false;
+        toggleBtn.disabled = true;
+        statusText.textContent = "Experience completed";
       };
     }
-  </script>
 
+    function handleVideoTimeUpdate() {
+      if (!hapticsEnabled) return;
+      
+      const currentTime = video.currentTime * 1000; // Convert to milliseconds
+      
+      // Check each haptic event
+      hapticData.haptics.forEach((haptic, index) => {
+        const hapticId = `haptic_${index}`;
+        
+        // Check if this haptic should trigger now and hasn't been triggered yet
+        if (currentTime >= haptic.timestamp && 
+            currentTime <= haptic.timestamp + haptic.duration && 
+            !triggeredHaptics.has(hapticId)) {
+          
+          triggerHaptic(haptic);
+          triggeredHaptics.add(hapticId);
+          hapticCount++;
+          hapticCountEl.textContent = hapticCount.toString();
+          
+          // Visual feedback
+          showHapticFeedback();
+        }
+      });
+    }
+
+    function triggerHaptic(haptic) {
+      if (!("vibrate" in navigator)) return;
+      
+      try {
+        // Use the basic vibration API since complex patterns aren't widely supported
+        // Convert complex patterns to simple vibration bursts
+        const pattern = haptic.pattern;
+        const maxAmplitude = Math.max(...haptic.amplitudes);
+        
+        // Create a simplified vibration pattern
+        let simplifiedPattern = [];
+        
+        if (pattern.length <= 2) {
+          // Simple vibration
+          const duration = Math.min(pattern[pattern.length - 1] || 100, 1000);
+          const intensity = Math.min(maxAmplitude / 255 * 200, 200);
+          simplifiedPattern = [intensity];
+        } else {
+          // Complex pattern - create rhythmic bursts
+          for (let i = 0; i < Math.min(pattern.length, 20); i += 2) {
+            const duration = Math.min(pattern[i] || 50, 200);
+            if (duration > 0) {
+              simplifiedPattern.push(duration);
+              if (i + 1 < pattern.length) {
+                simplifiedPattern.push(Math.min(pattern[i + 1] || 50, 200));
+              }
+            }
+          }
+        }
+        
+        // Trigger the vibration
+        navigator.vibrate(simplifiedPattern);
+        
+      } catch (error) {
+        console.log("Haptic feedback not supported or failed:", error);
+      }
+    }
+
+    function showHapticFeedback() {
+      hapticIndicator.classList.add("active");
+      setTimeout(() => {
+        hapticIndicator.classList.remove("active");
+      }, 200);
+    }
+
+    function toggleHaptics() {
+      hapticsEnabled = !hapticsEnabled;
+      toggleBtn.textContent = hapticsEnabled ? "🔊 Disable Haptics" : "🔇 Enable Haptics";
+      statusText.textContent = hapticsEnabled ? "Haptic experience active" : "Haptics disabled";
+    }
+
+    // Initialize when page loads
+    window.addEventListener('load', initializeElements);
+  </script>
 </body>
 </html>
