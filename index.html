@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Advanced Haptic Video Experience</title>
+  <title>Haptic Video Player</title>
   <style>
     body {
       background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
@@ -102,6 +102,28 @@
       box-shadow: 0 0 15px #00ff99;
     }
     
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+      margin: 15px 0;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(45deg, #00ff99, #00ccff);
+      width: 0%;
+      transition: width 0.1s ease;
+    }
+    
+    .time-display {
+      font-size: 1.2em;
+      margin: 10px 0;
+      color: #00ff99;
+    }
+    
     .info {
       margin-top: 30px;
       padding: 20px;
@@ -128,14 +150,23 @@
 </head>
 <body>
   <div class="container">
-    <h1>🎵 Advanced Haptic Video Experience</h1>
-    <p class="subtitle">Feel every beat, rhythm, and moment through synchronized vibrations</p>
+    <h1>🎵 Haptic Video Player</h1>
+    <p class="subtitle">Feel every beat through synchronized vibrations</p>
     
-    <video id="myVideo" src="https://lemonchiffon-boar-262793.hostingersite.com/video.mp4" controls></video>
+    <video id="myVideo" src="https://lemonchiffon-boar-262793.hostingersite.com/video.mp4" muted></video>
+    
+    <div class="time-display">
+      <span id="currentTime">0:00</span> / <span id="totalTime">0:00</span>
+    </div>
+    
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
     
     <div class="controls">
-      <button id="startBtn" onclick="startHapticVideo()">🎮 Start Haptic Experience</button>
-      <button id="toggleBtn" onclick="toggleHaptics()" disabled>🔊 Disable Haptics</button>
+      <button id="playPauseBtn" onclick="togglePlayPause()">▶️ Play</button>
+      <button id="resetBtn" onclick="resetVideo()">🔄 Reset</button>
+      <button id="toggleBtn" onclick="toggleHaptics()">🔊 Disable Haptics</button>
     </div>
     
     <div class="status">
@@ -165,7 +196,7 @@
   </div>
 
   <script>
-    // Advanced haptic data from the provided JSON
+    // Advanced haptic data
     const hapticData = {
       "haptics": [
         {
@@ -543,46 +574,102 @@
 
     let video;
     let hapticsEnabled = true;
-    let triggeredHaptics = new Set();
+    let isPlaying = false;
     let hapticCount = 0;
     let statusText, hapticCountEl, hapticIndicator;
-    let startBtn, toggleBtn;
+    let playPauseBtn, resetBtn, toggleBtn;
+    let currentTimeEl, totalTimeEl, progressFill;
+    let activeHaptics = new Set(); // Track which haptics are currently active
 
     function initializeElements() {
       video = document.getElementById("myVideo");
       statusText = document.getElementById("statusText");
       hapticCountEl = document.getElementById("hapticCount");
       hapticIndicator = document.getElementById("hapticIndicator");
-      startBtn = document.getElementById("startBtn");
+      playPauseBtn = document.getElementById("playPauseBtn");
+      resetBtn = document.getElementById("resetBtn");
       toggleBtn = document.getElementById("toggleBtn");
+      currentTimeEl = document.getElementById("currentTime");
+      totalTimeEl = document.getElementById("totalTime");
+      progressFill = document.getElementById("progressFill");
+      
+      // Set up video events
+      video.addEventListener('loadedmetadata', () => {
+        totalTimeEl.textContent = formatTime(video.duration);
+      });
+      
+      video.addEventListener('timeupdate', handleVideoTimeUpdate);
+      video.addEventListener('ended', handleVideoEnded);
+      
+      // Remove all video controls
+      video.controls = false;
+      video.setAttribute('controlslist', 'nodownload nofullscreen noremoteplayback');
+      video.setAttribute('disablepictureinpicture', '');
+      
+      // Prevent context menu on video
+      video.addEventListener('contextmenu', (e) => e.preventDefault());
     }
 
-    function startHapticVideo() {
-      if (!video) initializeElements();
+    function togglePlayPause() {
+      if (!video) return;
       
+      if (isPlaying) {
+        pauseVideo();
+      } else {
+        playVideo();
+      }
+    }
+
+    function playVideo() {
       video.play();
-      startBtn.disabled = true;
-      toggleBtn.disabled = false;
-      statusText.textContent = "Haptic experience active";
+      isPlaying = true;
+      playPauseBtn.textContent = "⏸️ Pause";
+      statusText.textContent = hapticsEnabled ? "Playing with haptics" : "Playing without haptics";
+    }
+
+    function pauseVideo() {
+      video.pause();
+      isPlaying = false;
+      playPauseBtn.textContent = "▶️ Play";
+      statusText.textContent = "Paused";
+      
+      // Stop all active haptics
+      if (navigator.vibrate) {
+        navigator.vibrate(0);
+      }
+    }
+
+    function resetVideo() {
+      video.currentTime = 0;
+      video.pause();
+      isPlaying = false;
+      playPauseBtn.textContent = "▶️ Play";
+      statusText.textContent = "Ready to start";
       
       // Reset haptic tracking
-      triggeredHaptics.clear();
+      activeHaptics.clear();
       hapticCount = 0;
       hapticCountEl.textContent = "0";
       
-      // Set up video time monitoring
-      video.ontimeupdate = handleVideoTimeUpdate;
+      // Reset progress
+      progressFill.style.width = "0%";
+      currentTimeEl.textContent = "0:00";
       
-      // Reset when video ends
-      video.onended = () => {
-        startBtn.disabled = false;
-        toggleBtn.disabled = true;
-        statusText.textContent = "Experience completed";
-      };
+      // Stop any active vibrations
+      if (navigator.vibrate) {
+        navigator.vibrate(0);
+      }
     }
 
     function handleVideoTimeUpdate() {
-      if (!hapticsEnabled) return;
+      if (!video) return;
+      
+      // Update time display and progress bar
+      currentTimeEl.textContent = formatTime(video.currentTime);
+      const progress = (video.currentTime / video.duration) * 100;
+      progressFill.style.width = progress + "%";
+      
+      if (!hapticsEnabled || !isPlaying) return;
       
       const currentTime = video.currentTime * 1000; // Convert to milliseconds
       
@@ -590,28 +677,40 @@
       hapticData.haptics.forEach((haptic, index) => {
         const hapticId = `haptic_${index}`;
         
-        // Check if this haptic should trigger now and hasn't been triggered yet
-        if (currentTime >= haptic.timestamp && 
-            currentTime <= haptic.timestamp + haptic.duration && 
-            !triggeredHaptics.has(hapticId)) {
-          
+        // Check if this haptic should be active now
+        const isInHapticRange = currentTime >= haptic.timestamp && 
+                               currentTime <= haptic.timestamp + haptic.duration;
+        
+        if (isInHapticRange && !activeHaptics.has(hapticId)) {
+          // Start new haptic
           triggerHaptic(haptic);
-          triggeredHaptics.add(hapticId);
+          activeHaptics.add(hapticId);
           hapticCount++;
           hapticCountEl.textContent = hapticCount.toString();
-          
-          // Visual feedback
           showHapticFeedback();
+        } else if (!isInHapticRange && activeHaptics.has(hapticId)) {
+          // Haptic period ended
+          activeHaptics.delete(hapticId);
         }
       });
+    }
+
+    function handleVideoEnded() {
+      isPlaying = false;
+      playPauseBtn.textContent = "▶️ Play";
+      statusText.textContent = "Video completed";
+      activeHaptics.clear();
+      
+      // Stop any remaining vibrations
+      if (navigator.vibrate) {
+        navigator.vibrate(0);
+      }
     }
 
     function triggerHaptic(haptic) {
       if (!("vibrate" in navigator)) return;
       
       try {
-        // Use the basic vibration API since complex patterns aren't widely supported
-        // Convert complex patterns to simple vibration bursts
         const pattern = haptic.pattern;
         const maxAmplitude = Math.max(...haptic.amplitudes);
         
@@ -654,7 +753,23 @@
     function toggleHaptics() {
       hapticsEnabled = !hapticsEnabled;
       toggleBtn.textContent = hapticsEnabled ? "🔊 Disable Haptics" : "🔇 Enable Haptics";
-      statusText.textContent = hapticsEnabled ? "Haptic experience active" : "Haptics disabled";
+      
+      if (!hapticsEnabled) {
+        // Stop all vibrations when haptics are disabled
+        if (navigator.vibrate) {
+          navigator.vibrate(0);
+        }
+        activeHaptics.clear();
+        statusText.textContent = isPlaying ? "Playing without haptics" : "Haptics disabled";
+      } else {
+        statusText.textContent = isPlaying ? "Playing with haptics" : "Ready to start";
+      }
+    }
+
+    function formatTime(seconds) {
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = Math.floor(seconds % 60);
+      return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
     }
 
     // Initialize when page loads
